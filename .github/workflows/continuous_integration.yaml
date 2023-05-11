@@ -1,16 +1,38 @@
-name: Windows CI
+name: lint
 
-on:
-  push:
-    branches: [ main ]
+on: [push]
 
 jobs:
-  build:
-    runs-on: windows-latest
-
+  lint:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: npm install
-    - name: Build and test
-      run: npm test
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Super-Linter
+        uses: github/super-linter@v4
+        with:
+          # Define the repositories to lint
+          repositories: '.'
+          # Exclude folders or files from being linted
+          excluded_files: |
+            node_modules/
+            .cache/
+          # Define the programming languages to lint
+          languages: |
+            ansible
+            dockerfile
+            golang
+            java
+            javascript
+            json
+            markdown
+            perl
+            php
+            powershell
+            python
+            ruby
+            shell
+            xml
+          # Enable or disable certain linters
+          enable: true
+          disable: false
