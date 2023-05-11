@@ -1,38 +1,16 @@
-name: lint
+name: Super-Linter
 
-on: [push]
+on: push
 
 jobs:
-  lint:
+  super-lint:
+    name: lint code base
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set up Super-Linter
-        uses: github/super-linter@v4
-        with:
-          # Define the repositories to lint
-          repositories: '.'
-          # Exclude folders or files from being linted
-          excluded_files: |
-            node_modules/
-            .cache/
-          # Define the programming languages to lint
-          languages: |
-            ansible
-            dockerfile
-            golang
-            java
-            javascript
-            json
-            markdown
-            perl
-            php
-            powershell
-            python
-            ruby
-            shell
-            xml
-          # Enable or disable certain linters
-          enable: true
-          disable: false
+      - name: Run Super-Linter
+        uses: github/super-linter@v3
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
