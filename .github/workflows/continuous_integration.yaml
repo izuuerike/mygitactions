@@ -1,24 +1,39 @@
-name: Build and Test
+name: PHP Composer
 
 on:
   push:
-    branches: [ main ]
+    branches: [ $default-branch ]
   pull_request:
-    branches: [ main ]
+    branches: [ $default-branch ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    runs-on: windows-latest
+
+    runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Set up .NET Core
-      uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v3
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
       with:
-        dotnet-version: '5.0.x'
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release
-    - name: Test
-      run: dotnet test --configuration Release --no-build
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
+    # Docs: https://getcomposer.org/doc/articles/scripts.md
+
+    # - name: Run test suite
+    #   run: composer run-script test
